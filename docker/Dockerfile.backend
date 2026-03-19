@@ -1,0 +1,40 @@
+# Agent Marketplace V2 - 后端 Dockerfile
+FROM python:3.11-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 设置环境变量
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_VERSION=1.7.1
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 安装 poetry
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+# 复制依赖文件
+COPY backend/pyproject.toml backend/poetry.lock* /app/
+
+# 安装 Python 依赖
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi || \
+    pip install --no-cache-dir -r backend/requirements.txt
+
+# 复制应用代码
+COPY backend /app
+
+# 创建日志目录
+RUN mkdir -p /app/logs
+
+# 暴露端口
+EXPOSE 8000
+
+# 启动命令
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

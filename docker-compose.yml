@@ -1,0 +1,139 @@
+# Agent Marketplace V2 - Docker Compose
+# 一键启动所有服务
+
+version: '3.8'
+
+services:
+  # ==================== 后端服务 ====================
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: agent-marketplace-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - DATABASE_URL=sqlite+aiosqlite:///./agent_marketplace.db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    volumes:
+      - backend-data:/app
+      - ./backend/logs:/app/logs
+    depends_on:
+      - redis
+    networks:
+      - agent-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==================== 前端服务 ====================
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: agent-marketplace-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # ==================== Redis缓存 ====================
+  redis:
+    image: redis:7-alpine
+    container_name: agent-marketplace-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - agent-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ==================== 示例Agent: 航班助手 ====================
+  flight-agent:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.agent
+    container_name: agent-marketplace-flight
+    environment:
+      - AGENT_ID=${FLIGHT_AGENT_ID:-flight-agent-001}
+      - AGENT_NAME=航班助手
+      - PLATFORM_WS=ws://backend:8000/ws/agent
+      - PLATFORM_API=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # ==================== 示例Agent: 天气助手 ====================
+  weather-agent:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.agent
+    container_name: agent-marketplace-weather
+    environment:
+      - AGENT_ID=${WEATHER_AGENT_ID:-weather-agent-001}
+      - AGENT_NAME=天气助手
+      - PLATFORM_WS=ws://backend:8000/ws/agent
+      - PLATFORM_API=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # ==================== 可选: PostgreSQL (生产环境) ====================
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: agent-marketplace-postgres
+  #   environment:
+  #     - POSTGRES_USER=agent_marketplace
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change-me}
+  #     - POSTGRES_DB=agent_marketplace
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - agent-network
+  #   restart: unless-stopped
+
+  # ==================== 可选: Prometheus监控 ====================
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: agent-marketplace-prometheus
+  #   volumes:
+  #     - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus-data:/prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - agent-network
+  #   restart: unless-stopped
+
+# ==================== 网络 ====================
+networks:
+  agent-network:
+    driver: bridge
+
+# ==================== 卷 ====================
+volumes:
+  backend-data:
+  redis-data:
+  # postgres-data:
+  # prometheus-data:

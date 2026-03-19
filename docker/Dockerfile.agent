@@ -1,0 +1,24 @@
+# Agent Marketplace V2 - 示例Agent Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# 安装依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 复制Agent代码
+COPY agents /app/agents
+
+# 安装Python依赖
+RUN pip install --no-cache-dir \
+    websockets>=12.0 \
+    aiohttp>=3.9.0 \
+    python-dotenv>=1.0.0
+
+# 复制启动脚本
+COPY docker/agent-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
