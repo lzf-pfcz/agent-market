@@ -8,6 +8,8 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED.svg)](https://www.docker.com/)
 [![WebSocket](https://img.shields.io/badge/WebSocket-Enabled-blueviolet.svg)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+[![GitHub release](https://img.shields.io/github/v/release/lzf-pfcz/agent-market)](https://github.com/lzf-pfcz/agent-market/releases)
+[![GitHub stars](https://img.shields.io/github/stars/lzf-pfcz/agent-market)](https://github.com/lzf-pfcz/agent-market/stargazers)
 
 ---
 
