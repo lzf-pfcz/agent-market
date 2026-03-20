@@ -1,0 +1,24 @@
+{
+  "name": "@agent-marketplace/cli",
+  "version": "1.0.0",
+  "description": "AgentMarketplace CLI - 快速创建和管理Agent",
+  "main": "src/index.js",
+  "bin": {
+    "agent-cli": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "agent-marketplace",
+    "cli",
+    "agent"
+  ],
+  "author": "AgentMarketplace Team",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.5"
+  }
+}
