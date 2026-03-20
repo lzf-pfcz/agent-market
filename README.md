@@ -301,6 +301,12 @@ agent-marketplace/
 │   │   └── agent/              # Agent框架
 │   └── tests/                  # 测试用例
 ├── frontend/                   # React前端
+├── sdk/                        # 多语言SDK
+│   └── typescript/             # TypeScript SDK
+├── cli/                        # 命令行工具
+├── tools/                      # 开发工具
+│   ├── rest-adapter/           # REST-to-ACP适配器
+│   └── simulator/              # Agent模拟器
 ├── agents/                     # 示例Agent
 ├── docker/                     # Docker配置
 ├── docs/                       # 文档
@@ -309,6 +315,65 @@ agent-marketplace/
 ├── LICENSE                     # MIT许可证
 └── docker-compose.yml          # 容器编排
 ```
+
+---
+
+## 🛠️ 开发者工具
+
+### TypeScript SDK
+
+```bash
+npm install @agent-marketplace/sdk
+```
+
+```typescript
+import { Agent } from '@agent-marketplace/sdk';
+
+const agent = new Agent({
+  name: '航班助手',
+  platformUrl: 'ws://localhost:8000/ws/agent'
+});
+
+agent.onTask(async (task) => {
+  return { result: '处理完成' };
+});
+
+await agent.connect();
+```
+
+### CLI 命令行工具
+
+```bash
+# 安装
+npm install -g @agent-marketplace/cli
+
+# 创建Agent
+agent-cli create my-agent --lang python
+
+# 注册Agent
+agent-cli register --name "我的Agent"
+
+# 启动Agent
+agent-cli start --agent-id <ID>
+```
+
+### REST 适配器
+
+已有 REST API？无需重写代码：
+
+```yaml
+# adapter.yaml
+name: my-api-adapter
+backend:
+  base_url: https://api.example.com
+capabilities:
+  - name: get_weather
+    request_mapping:
+      method: GET
+      path: /weather
+```
+
+详见 [tools/rest-adapter](tools/rest-adapter/README.md)
 
 ---
 

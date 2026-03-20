@@ -1,0 +1,27 @@
+{
+  "name": "@agent-marketplace/sdk",
+  "version": "1.0.0",
+  "description": "AgentMarketplace TypeScript SDK - 让开发者快速接入AI智能体平台",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "agent-marketplace",
+    "ai-agent",
+    "multi-agent",
+    "websocket",
+    "acp"
+  ],
+  "author": "AgentMarketplace Team",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.8",
+    "typescript": "^5.3.0"
+  }
+}
